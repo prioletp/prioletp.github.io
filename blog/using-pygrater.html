@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radiative Transfer Modelling with pyGRaTeR — Philippe Priolet</title>
+  <meta name="description" content="Learn how to use pyGRaTeR to model the thermal emission and scattering properties of optically thin debris disks.">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <canvas id="stars"></canvas>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html" class="nav-name">Philippe Priolet</a></li>
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#research">Research</a></li>
+      <li><a href="../index.html#publications">Publications</a></li>
+      <li><a href="../index.html#cv">CV</a></li>
+      <li><a href="../index.html#blog">Blog</a></li>
+      <li><a href="../index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+
+      <a href="../index.html#blog" class="back-link">← Back to Blog</a>
+
+      <div class="post-meta">
+        <span class="post-tag">Tutorial</span>
+        <span class="post-date">April 2026</span>
+      </div>
+
+      <h1 class="post-title">Radiative Transfer Modelling with pyGRaTeR</h1>
+
+      <div class="post-hero-img b2">💻</div>
+
+      <div class="post-body">
+        <p>
+          <strong>pyGRaTeR</strong> is a Python radiative transfer code I am developing, specifically designed for modelling optically thin debris disks and their inner regions (exozodiacal dust). It is based on the IDL code GRaTeR (Augereau et al. 1999), but rewritten in Python with extended features and an open-source approach. This tutorial introduces the core concepts and shows you how to get started.
+        </p>
+
+        <h2>What pyGRaTeR Does</h2>
+        <p>
+          pyGRaTeR computes the thermal emission and scattered light from dust grains in optically thin environments. The key capabilities include:
+        </p>
+        <p>
+          • <strong>Mie theory:</strong> Computing the absorption and scattering efficiencies of spherical dust grains as a function of grain size, composition, and wavelength.<br>
+          • <strong>Thermal emission:</strong> Calculating the equilibrium temperature of grains at a given distance from the star, and their resulting spectral energy distribution (SED).<br>
+          • <strong>Scattering:</strong> Modelling the scattered light contribution including the scattering phase function.<br>
+          • <strong>N-body inputs:</strong> Incorporating size and spatial distributions from dynamical N-body simulations (e.g., from the tools developed by Sezestre and Péronne at IPAG).
+        </p>
+
+        <h2>Getting Started</h2>
+        <p>
+          pyGRaTeR requires Python 3.8+ and depends on standard scientific packages:
+        </p>
+        <p>
+          • <code>numpy</code> and <code>scipy</code> for numerical computations<br>
+          • <code>matplotlib</code> for plotting<br>
+          • <code>astropy</code> for FITS I/O and unit handling
+        </p>
+
+        <h2>Core Workflow</h2>
+        <p>
+          A typical pyGRaTeR workflow involves three main steps:
+        </p>
+        <p>
+          <strong>1. Define the stellar properties:</strong> Specify the star's luminosity, temperature, and distance. pyGRaTeR uses these to compute the radiation field incident on the dust grains.
+        </p>
+        <p>
+          <strong>2. Set up the dust model:</strong> Choose the grain composition (e.g., astronomical silicates, carbonaceous grains), the size distribution (typically a power law dn/da ∝ a<sup>−q</sup>), and the spatial distribution (radial density profile). You can also import distributions from N-body simulations.
+        </p>
+        <p>
+          <strong>3. Compute observables:</strong> pyGRaTeR computes the grain temperatures, SED, and surface brightness profiles. These can then be compared directly to observations — SEDs from photometry, or visibilities from interferometry.
+        </p>
+
+        <h2>Modelling Exozodiacal Dust</h2>
+        <p>
+          For exozodiacal dust, the emission is very faint compared to the star (typically ~1% of the stellar flux). This means:
+        </p>
+        <p>
+          • The dust is in the <strong>optically thin</strong> regime — each grain radiates independently, and self-absorption is negligible. This makes the radiative transfer much simpler and faster.<br>
+          • The key observable from interferometry is the <strong>visibility drop</strong> — the circumstellar emission reduces the fringe contrast by a few percent compared to a point source.<br>
+          • pyGRaTeR can compute model visibilities at any baseline and wavelength, allowing direct comparison with VLTI data.
+        </p>
+
+        <h2>Comparison with Other Codes</h2>
+        <p>
+          Unlike general-purpose radiative transfer codes (e.g., RADMC-3D, MCFOST), pyGRaTeR is optimised for optically thin sources. This makes it:
+        </p>
+        <p>
+          • <strong>Much faster</strong> — no need for Monte Carlo photon packets or iterative temperature calculations.<br>
+          • <strong>Tailored</strong> to the specific observables of interest (interferometric visibilities, SEDs).<br>
+          • <strong>Easy to couple</strong> with dynamical models for the dust production and transport.
+        </p>
+        <p>
+          The trade-off is that it cannot handle optically thick environments (e.g., protoplanetary disks), where multiple scattering and absorption matter.
+        </p>
+
+        <h2>What's Coming</h2>
+        <p>
+          pyGRaTeR is under active development. Upcoming features include:
+        </p>
+        <p>
+          • Full integration of N-body dynamical simulation outputs<br>
+          • Optimised grain property calculations for large parameter grids<br>
+          • Public release on GitHub with documentation and example notebooks
+        </p>
+
+        <p>
+          <em>A detailed code walkthrough with example scripts will be added here once pyGRaTeR is publicly released. Stay tuned!</em>
+        </p>
+      </div>
+
+      <a href="../index.html#blog" class="back-link">← Back to Blog</a>
+
+    </div>
+  </article>
+
+  <footer>
+    <p>© 2026 Philippe Priolet · Astrophysics PhD · IPAG, Université Grenoble Alpes</p>
+  </footer>
+
+  <script>
+    (function initStarfield() {
+      const canvas = document.getElementById('stars');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let stars = [];
+      function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      function create() {
+        resize(); stars = [];
+        const count = Math.min(300, Math.floor(canvas.width * canvas.height / 4000));
+        for (let i = 0; i < count; i++) {
+          stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+            r: Math.random() * 1.5 + 0.2, phase: Math.random() * Math.PI * 2, speed: Math.random() * 0.003 + 0.001 });
+        }
+      }
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => { s.phase += s.speed; const a = 0.4 + 0.4 * Math.abs(Math.sin(s.phase));
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(180,200,255,${a})`; ctx.fill(); });
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize', create); create(); draw();
+    })();
+  </script>
+
+</body>
+</html>

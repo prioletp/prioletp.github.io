@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Reduction with the MATISSE Pipeline — Philippe Priolet</title>
+  <meta name="description" content="A step-by-step guide to reducing VLTI/MATISSE data — from raw files to calibrated visibilities.">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <canvas id="stars"></canvas>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html" class="nav-name">Philippe Priolet</a></li>
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#research">Research</a></li>
+      <li><a href="../index.html#publications">Publications</a></li>
+      <li><a href="../index.html#cv">CV</a></li>
+      <li><a href="../index.html#blog">Blog</a></li>
+      <li><a href="../index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+
+      <a href="../index.html#blog" class="back-link">← Back to Blog</a>
+
+      <div class="post-meta">
+        <span class="post-tag">Tutorial</span>
+        <span class="post-date">April 2026</span>
+      </div>
+
+      <h1 class="post-title">Data Reduction with the MATISSE Pipeline</h1>
+
+      <div class="post-hero-img b1">📡</div>
+
+      <div class="post-body">
+        <p>
+          VLTI/MATISSE is a four-telescope beam combiner operating in the L, M and N bands (3–13 µm). It provides spectrally dispersed visibilities, closure phases, and differential phases, making it a powerful tool for studying circumstellar environments. This tutorial walks you through the essential steps of reducing MATISSE data using the ESO pipeline.
+        </p>
+
+        <h2>Prerequisites</h2>
+        <p>
+          Before starting, make sure you have the following installed:
+        </p>
+        <p>
+          • The <strong>ESO Reflex</strong> environment or the command-line <strong>EsoRex</strong> tool.<br>
+          • The <strong>MATISSE pipeline recipes</strong> (available from the ESO pipeline page).<br>
+          • Your raw data downloaded from the ESO archive, including both science and calibrator observations.<br>
+          • The associated static calibration files.
+        </p>
+
+        <h2>Step 1: Organising Your Data</h2>
+        <p>
+          MATISSE raw data consists of FITS files organised by observing block (OB). Each OB includes target acquisitions, fringe tracking files, photometric calibrations, and interferometric exposures. Start by sorting your data into directories by target and OB. The ESO archive provides an association tree that links raw science files to their corresponding calibrations.
+        </p>
+
+        <h2>Step 2: Running the Pipeline Recipes</h2>
+        <p>
+          The MATISSE pipeline is composed of several recipes that must be run in sequence:
+        </p>
+        <p>
+          <strong>1. mat_raw_estimates:</strong> Computes raw coherent flux and photometric estimates from the interferometric exposures.<br>
+          <strong>2. mat_cal_oifits:</strong> Calibrates the raw observables using a calibrator star with known diameter, producing calibrated OIFITS files with visibilities, closure phases, and differential phases.
+        </p>
+        <p>
+          In practice, you will also need to run the dark and flat-field recipes (<code>mat_raw_dark</code>, <code>mat_raw_flat</code>) to produce master calibration frames.
+        </p>
+
+        <h2>Step 3: Quality Control</h2>
+        <p>
+          After reduction, carefully inspect your calibrated data. Key things to check:
+        </p>
+        <p>
+          • <strong>Transfer function stability:</strong> Plot the calibrator visibilities over the night. Large variations indicate poor atmospheric conditions or instrumental issues.<br>
+          • <strong>Closure phase consistency:</strong> For unresolved calibrators, closure phases should be close to zero.<br>
+          • <strong>Spectral coverage:</strong> Check that all spectral channels have been reduced properly, especially at the edges of the atmospheric windows.
+        </p>
+
+        <h2>Understanding Correlations</h2>
+        <p>
+          One important aspect when working with MATISSE data — especially for faint circumstellar emission — is that data points are not independent. Spectral channels within the same baseline tend to be strongly correlated, and correlations also exist between baselines sharing a telescope. In my work (Priolet et al., submitted), I developed an empirical approach to estimate correlation matrices for MATISSE data. Accounting for these correlations is crucial for accurate model fitting.
+        </p>
+
+        <h2>Tips & Common Pitfalls</h2>
+        <p>
+          • Always reduce your data with the <strong>same pipeline version</strong> for consistency.<br>
+          • Be careful with the <strong>chopping/nodding subtraction</strong> in N-band — incorrect background subtraction can introduce systematic biases.<br>
+          • When working with faint sources, consider using the <strong>coherent integration</strong> mode to boost SNR.<br>
+          • The OIFITS 2 standard supports correlation matrices — consider using this format for your reduced data.
+        </p>
+
+        <p>
+          <em>This tutorial will be expanded with code examples and a Jupyter notebook walkthrough. Stay tuned!</em>
+        </p>
+      </div>
+
+      <a href="../index.html#blog" class="back-link">← Back to Blog</a>
+
+    </div>
+  </article>
+
+  <footer>
+    <p>© 2026 Philippe Priolet · Astrophysics PhD · IPAG, Université Grenoble Alpes</p>
+  </footer>
+
+  <script>
+    (function initStarfield() {
+      const canvas = document.getElementById('stars');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let stars = [];
+      function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      function create() {
+        resize(); stars = [];
+        const count = Math.min(300, Math.floor(canvas.width * canvas.height / 4000));
+        for (let i = 0; i < count; i++) {
+          stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+            r: Math.random() * 1.5 + 0.2, phase: Math.random() * Math.PI * 2, speed: Math.random() * 0.003 + 0.001 });
+        }
+      }
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => { s.phase += s.speed; const a = 0.4 + 0.4 * Math.abs(Math.sin(s.phase));
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(180,200,255,${a})`; ctx.fill(); });
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize', create); create(); draw();
+    })();
+  </script>
+
+</body>
+</html>

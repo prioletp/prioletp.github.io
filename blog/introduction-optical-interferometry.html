@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Optical Interferometry — Philippe Priolet</title>
+  <meta name="description" content="How combining light from multiple telescopes lets us see the universe in extraordinary detail — an introduction to optical interferometry.">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <canvas id="stars"></canvas>
+
+  <nav>
+    <ul>
+      <li><a href="../index.html" class="nav-name">Philippe Priolet</a></li>
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#research">Research</a></li>
+      <li><a href="../index.html#publications">Publications</a></li>
+      <li><a href="../index.html#cv">CV</a></li>
+      <li><a href="../index.html#blog">Blog</a></li>
+      <li><a href="../index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <article class="blog-post">
+    <div class="container">
+
+      <a href="../index.html#blog" class="back-link">← Back to Blog</a>
+
+      <div class="post-meta">
+        <span class="post-tag">Techniques</span>
+        <span class="post-date">April 2026</span>
+      </div>
+
+      <h1 class="post-title">Introduction to Optical Interferometry</h1>
+
+      <div class="post-hero-img b2">🔭</div>
+
+      <div class="post-body">
+        <p>
+          In astronomy, bigger telescopes mean sharper images. But there's a practical limit to how large a single mirror can be built. Optical interferometry offers an elegant solution: instead of building one impossibly large telescope, we combine the light from several smaller ones to achieve the resolving power of a telescope as wide as the distance between them.
+        </p>
+
+        <h2>The Diffraction Limit</h2>
+        <p>
+          The angular resolution of a telescope — its ability to distinguish fine detail — is set by the ratio of the wavelength of light to the diameter of the aperture (λ/D). For visible light (λ ≈ 500 nm), a 10-metre mirror gives a resolution of about 10 milliarcseconds. That's impressive, but to resolve the surfaces of nearby stars or the inner regions of active galactic nuclei, we need to do much better.
+        </p>
+        <p>
+          By placing two telescopes hundreds of metres apart and combining their light coherently, we can synthesise an effective aperture equal to that baseline, reaching sub-milliarcsecond resolution in the optical and near-infrared.
+        </p>
+
+        <h2>How It Works</h2>
+        <p>
+          The basic principle is wave interference. Light from an astronomical source arrives at two telescopes separated by a baseline <em>B</em>. Because the source is at a slight angle to the baseline, the wavefronts arrive with a small path-length difference. When the beams are combined, they produce an interference pattern — fringes — whose contrast (visibility) and phase encode information about the spatial structure of the source.
+        </p>
+        <p>
+          The key measurement is the complex visibility, which is related to the source brightness distribution through the van Cittert–Zernike theorem. By observing with many different baselines and orientations, we can reconstruct an image of the source — a technique called aperture synthesis, familiar from radio astronomy but far more challenging at optical wavelengths.
+        </p>
+
+        <h2>Challenges at Optical Wavelengths</h2>
+        <p>
+          Radio interferometry has been routine since the 1950s, but optical interferometry is much harder. The wavelengths are roughly a million times shorter, so path-length differences must be controlled to nanometre precision. Atmospheric turbulence scrambles the incoming wavefronts on timescales of milliseconds, demanding fast fringe tracking and adaptive optics.
+        </p>
+        <p>
+          Despite these challenges, facilities like the Very Large Telescope Interferometer (VLTI) at ESO's Paranal Observatory and the CHARA Array in California routinely achieve angular resolutions below 1 milliarcsecond — equivalent to reading a newspaper headline on the Moon.
+        </p>
+
+        <h2>Scientific Highlights</h2>
+        <p>
+          Optical interferometry has produced remarkable science. It has directly measured the diameters and shapes of stars, revealing rapid rotation and surface features. It has resolved the dusty tori around active galactic nuclei, testing unified models of AGN. And with instruments like GRAVITY at the VLTI, it has tracked stars orbiting the supermassive black hole at the centre of the Milky Way, providing some of the strongest evidence for general relativity in strong gravitational fields.
+        </p>
+        <p>
+          Looking ahead, the next generation of interferometric instruments aims to directly detect and characterise exoplanets, image stellar surfaces in detail, and probe the environments of supermassive black holes with unprecedented precision.
+        </p>
+
+        <h2>Getting Started</h2>
+        <p>
+          If you're interested in learning more, the textbook <em>Principles of Stellar Interferometry</em> by Glindemann is an excellent starting point. For hands-on experience, ESO and CHARA both offer open data archives and reduction pipelines. Interferometry is a rapidly growing field — and there's never been a better time to get involved.
+        </p>
+      </div>
+
+      <a href="../index.html#blog" class="back-link">← Back to Blog</a>
+
+    </div>
+  </article>
+
+  <footer>
+    <p>© 2026 Philippe Priolet · Astrophysics PhD · IPAG, Université Grenoble Alpes</p>
+  </footer>
+
+  <script>
+    (function initStarfield() {
+      const canvas = document.getElementById('stars');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let stars = [];
+      function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      function create() {
+        resize(); stars = [];
+        const count = Math.min(300, Math.floor(canvas.width * canvas.height / 4000));
+        for (let i = 0; i < count; i++) {
+          stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+            r: Math.random() * 1.5 + 0.2, phase: Math.random() * Math.PI * 2, speed: Math.random() * 0.003 + 0.001 });
+        }
+      }
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => { s.phase += s.speed; const a = 0.4 + 0.4 * Math.abs(Math.sin(s.phase));
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(180,200,255,${a})`; ctx.fill(); });
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize', create); create(); draw();
+    })();
+  </script>
+
+</body>
+</html>

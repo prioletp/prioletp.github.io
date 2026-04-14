@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPublications();
   renderCV();
   renderBlog();
+  renderSoftware();
+  renderResources();
   renderContact();
   renderFooter();
   initScrollReveal();
@@ -77,6 +79,8 @@ function renderNav() {
     <li><a href="#publications">Publications</a></li>
     <li><a href="#cv">CV</a></li>
     <li><a href="#blog">Blog</a></li>
+    <li><a href="#software">Software</a></li>
+    <li><a href="#resources">Resources</a></li>
     <li><a href="#contact">Contact</a></li>
   `;
 }
@@ -103,6 +107,7 @@ function renderHero() {
         <div class="hero-links">
           <a href="#research" class="btn btn-primary">View Research</a>
           <a href="#publications" class="btn btn-outline">Publications</a>
+          <a href="#blog" class="btn btn-outline">Writings</a>
           <a href="#contact" class="btn btn-outline">Get in Touch</a>
         </div>
       </div>
@@ -228,11 +233,66 @@ function renderCV() {
         <div class="skills-cloud">${skillCloud(cv.technicalSkills)}</div>
         <div class="cv-section-title" style="margin-top:2rem">Observational</div>
         <div class="skills-cloud">${skillCloud(cv.observationalSkills)}</div>
-        <div class="cv-section-title" style="margin-top:2rem">Awards</div>
-        <div class="timeline" style="margin-top:0">${timeline(cv.awards)}</div>
         <a href="${cv.downloadLink}" class="cv-download" target="_blank" rel="noopener">⬇ Download full CV (PDF)</a>
       </div>
     </div>
+  `;
+}
+
+/* ── Software & Tools ─────────────────────────────────────── */
+function renderSoftware() {
+  const el = document.getElementById('software-content');
+  if (!el) return;
+
+  const cards = SITE.software.map(s => {
+    const wip = s.underConstruction;
+    const cls = `blog-card${wip ? ' under-construction' : ''}`;
+    const href = wip ? 'javascript:void(0)' : s.link;
+    return `
+    <a href="${href}" class="${cls}">
+      <div class="blog-img ${s.gradient}">${s.emoji}</div>
+      <div class="blog-body">
+        <div class="blog-title">${s.title}</div>
+        <div class="blog-excerpt">${s.excerpt}</div>
+        <span class="blog-tag">${s.tag}</span>
+      </div>
+    </a>
+  `;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="section-label">Software & Tools</div>
+    <div class="section-title">What I build</div>
+    <div class="section-line"></div>
+    <div class="blog-grid">${cards}</div>
+  `;
+}
+
+/* ── Resources & Links ────────────────────────────────────── */
+function renderResources() {
+  const el = document.getElementById('resources-content');
+  if (!el) return;
+
+  const cards = SITE.resources.map(r => {
+    const wip = r.underConstruction;
+    const cls = `blog-card${wip ? ' under-construction' : ''}`;
+    const href = wip ? 'javascript:void(0)' : r.link;
+    return `
+    <a href="${href}" class="${cls}">
+      <div class="blog-img ${r.gradient}">${r.emoji}</div>
+      <div class="blog-body">
+        <div class="blog-title">${r.title}</div>
+        <div class="blog-excerpt">${r.excerpt}</div>
+      </div>
+    </a>
+  `;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="section-label">Resources</div>
+    <div class="section-title">Useful links</div>
+    <div class="section-line"></div>
+    <div class="blog-grid">${cards}</div>
   `;
 }
 
@@ -241,23 +301,38 @@ function renderBlog() {
   const el = document.getElementById('blog-content');
   if (!el) return;
 
-  const cards = SITE.blog.map(b => `
-    <a href="${b.link}" class="blog-card">
-      <div class="blog-img ${b.gradient}">${b.emoji}</div>
-      <div class="blog-body">
-        <div class="blog-date">${b.date}</div>
-        <div class="blog-title">${b.title}</div>
-        <div class="blog-excerpt">${b.excerpt}</div>
-        <span class="blog-tag">${b.tag}</span>
-      </div>
-    </a>
-  `).join('');
+  function blogCards(items) {
+    return items.map(b => {
+      const wip = b.underConstruction;
+      const cls = `blog-card${wip ? ' under-construction' : ''}`;
+      const href = wip ? 'javascript:void(0)' : b.link;
+      return `
+      <a href="${href}" class="${cls}">
+        <div class="blog-img ${b.gradient}">${b.emoji}</div>
+        <div class="blog-body">
+          <div class="blog-date">${b.date}</div>
+          <div class="blog-title">${b.title}</div>
+          <div class="blog-excerpt">${b.excerpt}</div>
+          <span class="blog-tag">${b.tag}</span>
+        </div>
+      </a>
+    `;
+    }).join('');
+  }
+
+  const gpCards = blogCards(SITE.blog.generalPublic);
+  const techCards = blogCards(SITE.blog.technical);
 
   el.innerHTML = `
     <div class="section-label">Blog</div>
-    <div class="section-title">Science writing</div>
+    <div class="section-title">Science writing & tutorials</div>
     <div class="section-line"></div>
-    <div class="blog-grid">${cards}</div>
+
+    <div class="blog-subsection-title">🌍 General Public</div>
+    <div class="blog-grid">${gpCards}</div>
+
+    <div class="blog-subsection-title" style="margin-top:3rem">🔭 For Astrophysicists — Tutorials</div>
+    <div class="blog-grid">${techCards}</div>
   `;
 }
 
